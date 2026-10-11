@@ -1,0 +1,14 @@
+target/
+.git/
+.gitignore
+.dockerignore
+*.md
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.env.*
+!.env.example
+effective-pom
+HELP.md
