@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ParkEase | Smart Parking</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">Park<span>Ease</span></a>
+    <span class="tagline">Smart Parking Management</span>
+  </header>
+
+  <main id="authPage" class="auth-page">
+    <section class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-icon">P</div>
+        <div>
+          <h1>Welcome to ParkEase</h1>
+          <p>Smart parking. Simple booking.</p>
+        </div>
+      </div>
+
+      <div class="auth-tabs">
+        <button id="loginTab" class="tab active" type="button">Login</button>
+        <button id="registerTab" class="tab" type="button">Create account</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <h2>Welcome back</h2>
+        <p class="muted">Log in to manage your parking.</p>
+        <label for="loginEmail">Email address</label>
+       <input id="loginEmail" name="loginEmail" type="email"
+       autocomplete="email" required maxlength="254"
+       placeholder="you@example.com">
+        <label for="loginPassword">Password</label>
+       <input id="loginPassword" name="loginPassword" type="password"
+       autocomplete="current-password" required maxlength="72"
+       placeholder="Enter your password">
+        <label class="checkbox-label"><input id="showLoginPassword" type="checkbox"> Show password</label>
+        <button class="primary-btn" type="submit">Login to ParkEase</button>
+        <p id="loginMessage" class="message" role="status"></p>
+      </form>
+
+      <form id="registerForm" class="auth-form" hidden>
+        <h2>Create your account</h2>
+        <p class="muted">Get started with convenient parking.</p>
+        <label for="registerName">Full name</label>
+        <input id="registerName" type="text" autocomplete="name" required
+          minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]{1,59}"
+          title="Use 2–60 letters; spaces, apostrophes, dots and hyphens are allowed."
+          placeholder="Your full name">
+        <label for="registerEmail">Email address</label>
+        <input id="registerEmail" type="email" autocomplete="email" required maxlength="254"
+          placeholder="you@example.com">
+        <label for="registerPhone">Phone number</label>
+<input
+  id="registerPhone"
+  type="tel"
+  autocomplete="tel"
+  required
+  inputmode="numeric"
+  maxlength="10"
+  pattern="[6-9][0-9]{9}"
+  title="Enter a 10-digit Indian mobile number starting with 6, 7, 8, or 9."
+  placeholder="Enter mobile number"
+>
+        <label for="registerPassword">Password</label>
+        <input id="registerPassword" type="password" minlength="8" maxlength="72" autocomplete="new-password" required
+          pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,72}"
+          title="Use 8–72 characters with uppercase, lowercase, a number and a special character."
+          placeholder="Uppercase, lowercase, number & special character">
+        <label for="confirmPassword">Confirm password</label>
+        <input id="confirmPassword" type="password" autocomplete="new-password" required maxlength="72"
+          placeholder="Re-enter your password">
+        <label class="checkbox-label"><input id="showRegisterPassword" type="checkbox"> Show passwords</label>
+        <button class="primary-btn" type="submit">Create account</button>
+        <p id="registerMessage" class="message" role="status"></p>
+      </form>
+      <p class="auth-note">Secure parking management for a smoother journey.</p>
+    </section>
+  </main>
+
+  <main id="userDashboard" class="dashboard" hidden>
+    <section class="welcome-banner">
+      <div>
+        <span class="eyebrow">USER DASHBOARD</span>
+        <h1>Hello, <span id="userDisplayName">Driver</span>!</h1>
+        <p>Find a parking space and reserve it in a few simple steps.</p>
+      </div>
+      <button class="outline-btn logoutBtn" type="button">Log out</button>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card"><span>Available slots</span><strong id="availableCount">—</strong></article>
+      <article class="stat-card"><span>My bookings</span><strong id="myBookingCount">0</strong></article>
+      <article class="stat-card"><span>Parking locations</span><strong id="locationCount">0</strong></article>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div><span class="eyebrow">PLAN YOUR VISIT</span><h2>Find parking</h2></div>
+        <button id="refreshMalls" class="outline-btn" type="button">Refresh locations</button>
+      </div>
+      <div class="form-grid">
+        <div>
+          <label for="mallSelect">Select mall or location</label>
+          <select id="mallSelect" required><option value="">Loading locations...</option></select>
+        </div>
+        <div>
+          <label for="startTime">Entry time</label>
+          <input id="startTime" type="datetime-local" required>
+        </div>
+        <div>
+          <label for="endTime">Exit time</label>
+          <input id="endTime" type="datetime-local" required>
+        </div>
+        <div class="form-action">
+          <button id="searchSlots" class="primary-btn" type="button">Find available slots</button>
+        </div>
+      </div>
+      <div class="vehicle-details panel-subsection">
+        <h3>Vehicle details (required before booking)</h3>
+        <div class="form-grid">
+          <div><label for="vehicleType">Vehicle type</label><select id="vehicleType" required><option value="">Select type</option><option>Bike</option><option>Car</option><option>SUV</option><option>Other</option></select></div>
+          <div><label for="vehicleNumber">Registration number</label><input id="vehicleNumber" required maxlength="20" placeholder="e.g. TS09AB1234" autocapitalize="characters"></div>
+          <div><label for="vehicleModel">Vehicle model</label><input id="vehicleModel" required maxlength="60" placeholder="e.g. Hyundai Creta"></div>
+          <div><label for="vehicleColor">Vehicle color</label><input id="vehicleColor" required maxlength="30" placeholder="e.g. White"></div>
+        </div>
+      </div>
+      <p id="slotMessage" class="message" role="status"></p>
+      <div id="slotsGrid" class="slots-grid"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div><span class="eyebrow">YOUR ACTIVITY</span><h2>My bookings</h2></div>
+        <button id="refreshBookings" class="outline-btn" type="button">Refresh bookings</button>
+      </div>
+      <p id="bookingMessage" class="message" role="status"></p>
+      <div id="myBookings" class="booking-list"></div>
+    </section>
+  </main>
+
+  <main id="adminDashboard" class="dashboard" hidden>
+    <section class="welcome-banner admin-banner">
+      <div>
+        <span class="eyebrow">ADMINISTRATION</span>
+        <h1>Admin dashboard</h1>
+        <p>Manage parking locations, slots and reservations.</p>
+      </div>
+      <button class="outline-btn logoutBtn" type="button">Log out</button>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card"><span>Total locations</span><strong id="adminMallCount">0</strong></article>
+      <article class="stat-card"><span>Total parking slots</span><strong id="adminSlotCount">0</strong></article>
+      <article class="stat-card"><span>Total bookings</span><strong id="adminBookingCount">0</strong></article>
+    </section>
+
+    <section class="admin-grid">
+      <article class="panel">
+        <span class="eyebrow">LOCATION MANAGEMENT</span>
+        <h2>Add a location</h2>
+        <form id="addMallForm" class="stack-form">
+          <label for="newMallName">Mall / location name</label>
+          <input id="newMallName" required placeholder="e.g. City Centre Mall">
+          <label for="newMallAddress">Address</label>
+          <input id="newMallAddress" required placeholder="Enter the location address">
+          <button class="primary-btn" type="submit">Add location</button>
+          <p id="addMallMessage" class="message" role="status"></p>
+        </form>
+      </article>
+
+      <article class="panel">
+        <span class="eyebrow">SLOT MANAGEMENT</span>
+        <h2>Add parking slots</h2>
+        <form id="addSlotForm" class="stack-form">
+          <label for="adminMallSelect">Select location</label>
+          <select id="adminMallSelect" required><option value="">Select a location</option></select>
+          <label for="newSlotNumber">Slot number / name</label>
+          <input id="newSlotNumber" required placeholder="e.g. A-101">
+          <button class="primary-btn" type="submit">Add slot</button>
+          <p id="addSlotMessage" class="message" role="status"></p>
+        </form>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div><span class="eyebrow">OVERVIEW</span><h2>Parking locations</h2></div>
+        <button id="adminRefresh" class="outline-btn" type="button">Refresh data</button>
+      </div>
+      <div id="adminMalls" class="booking-list"></div>
+    </section>
+
+    <section class="panel">
+      <span class="eyebrow">RESERVATION MANAGEMENT</span>
+      <h2>All bookings</h2>
+      <p id="adminBookingMessage" class="message" role="status"></p>
+      <div id="allBookings" class="booking-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2026 ParkEase · Smart Parking Management</footer>
+  <script src="app.js"></script>
+</body>
+</html>
