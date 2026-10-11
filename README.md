@@ -11,7 +11,7 @@ A **Spring Boot + MongoDB** backend for managing mall parking slots and bookings
 |---|---|
 | Java | 25+ |
 | MongoDB | 7.0+ |
-| Maven | via `mvnw` wrapper (no install needed) |
+| Maven | via the `backend/mvnw` wrapper (no install needed) |
 
 ### 1. Clone the repo
 ```bash
@@ -26,8 +26,10 @@ mongod --port 27018
 
 ### 3. Run the application
 ```bash
+cd backend
+
 # Windows
-./mvnw.cmd spring-boot:run
+.\mvnw.cmd spring-boot:run
 
 # Linux / macOS
 ./mvnw spring-boot:run
@@ -42,16 +44,17 @@ The app starts at **http://localhost:8080**
 ### Run with Docker Compose (app + MongoDB in one command)
 
 ```bash
-# 1. Create your environment file from the template
-cp .env.example .env
+# Run these commands from the backend folder
+cd backend
 
-# 2. Edit .env — set a secure admin password (min. 12 chars)
+# Optional: create backend/.env to override defaults, including the admin password.
+# Keep this file private; do not commit it.
 notepad .env   # or nano .env on Linux
 
-# 3. Start everything
+# Start everything
 docker compose up -d
 
-# 4. View logs
+# View logs
 docker compose logs -f app
 ```
 
@@ -75,7 +78,7 @@ docker run -d \
 | Variable | Default | Description |
 |---|---|---|
 | `PORT` | `8080` | HTTP server port |
-| `SPRING_MONGODB_URI` | `mongodb://localhost:27018/parking_system` | Full MongoDB connection URI |
+| `SPRING_MONGODB_URI` | `mongodb://127.0.0.1:27018/parking_system` | Full MongoDB connection URI; set to your Atlas URI on Render |
 | `MONGODB_DATABASE` | `parking_system` | Database name |
 | `PARKEASE_ADMIN_EMAIL` | `admin@parkease.com` | Admin account email |
 | `PARKEASE_ADMIN_PASSWORD` | *(empty — skips bootstrap)* | Admin password (≥ 12 chars) |
@@ -83,7 +86,9 @@ docker run -d \
 | `LOG_APP_LEVEL` | `INFO` | App-specific log level |
 | `LOG_ROOT_LEVEL` | `INFO` | Root log level |
 
-> **Security**: Never commit a real `.env` file. Use the provided `.env.example` as a template.
+> **Security**: Never commit a real `.env` file. Docker Compose supplies defaults when no environment file is present.
+
+For MongoDB Atlas, set `SPRING_MONGODB_URI` in Render to the connection string Atlas provides, for example `mongodb+srv://<user>:<password>@<cluster-host>/parking_system?retryWrites=true&w=majority`. URL-encode special characters in the password. Do not put database credentials in this file.
 
 ---
 
@@ -128,19 +133,30 @@ docker run -d \
 ## 🏗️ Project Structure
 
 ```
-src/
-├── main/
-│   ├── java/com/parking/parkingsystem/
+backend/
+├── src/
+│   ├── main/java/com/parking/parkingsystem/
 │   │   ├── config/        # Security & admin initializer
 │   │   ├── controller/    # REST controllers + health check
 │   │   ├── model/         # MongoDB documents
 │   │   ├── repository/    # Spring Data repositories
 │   │   └── service/       # Business logic
-│   └── resources/
-│       ├── static/        # Frontend (HTML, CSS, JS)
-│       └── application.properties
-└── test/
+│   ├── main/resources/
+│   │   └── application.properties
+│   └── test/              # Backend tests
+├── .mvn/                  # Maven wrapper configuration
+├── mvnw / mvnw.cmd        # Maven wrapper scripts
+├── pom.xml
+├── Dockerfile
+└── docker-compose.yml
+frontend/
+├── index.html
+├── app.js
+└── style.css
 ```
+
+The Maven build packages `frontend/` into the backend JAR as static resources, so the app continues to serve the UI at its existing URL.
+The repository root contains only these two application folders; `.github/` remains at the root because GitHub Actions requires that location.
 
 ---
 
@@ -167,6 +183,8 @@ src/
 ## 🧪 Running Tests
 
 ```bash
+cd backend
+
 ./mvnw.cmd test    # Windows
 ./mvnw test        # Linux / macOS
 ```

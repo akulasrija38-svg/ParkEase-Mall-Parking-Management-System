@@ -9,6 +9,5 @@ target/
 *.log
 .env
 .env.*
-!.env.example
 effective-pom
 HELP.md

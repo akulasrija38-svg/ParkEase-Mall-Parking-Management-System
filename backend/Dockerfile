@@ -2,11 +2,11 @@
 # Build Stage
 # ==============================================================================
 FROM eclipse-temurin:25-jdk-noble AS builder
-WORKDIR /app
+WORKDIR /app/backend
 
 # Copy Maven wrapper and POM first for better layer caching
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
+COPY backend/.mvn/ .mvn/
+COPY backend/mvnw backend/pom.xml ./
 
 # Normalize line endings and ensure execution permissions for the wrapper
 RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
@@ -15,7 +15,8 @@ RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
 RUN ./mvnw dependency:go-offline -B
 
 # Copy project source code
-COPY src ./src
+COPY backend/src ./src
+COPY frontend/ /app/frontend/
 
 # Build production JAR without running integration tests during container image build
 RUN ./mvnw clean package -DskipTests
@@ -34,7 +35,7 @@ ENV PORT=8080 \
     JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
 # Copy executable jar from builder stage
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/backend/target/*.jar app.jar
 RUN chown -R parkease:parkease /app
 
 USER parkease

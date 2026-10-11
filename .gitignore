@@ -1,6 +1,6 @@
 HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -35,7 +35,6 @@ build/
 # Environment variables and secrets
 .env
 .env.*
-!.env.example
 
 # Logs
 *.log

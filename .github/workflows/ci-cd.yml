@@ -26,6 +26,7 @@ jobs:
           cache: maven
 
       - name: Build and test
+        working-directory: backend
         run: ./mvnw clean verify -B
         env:
           # Admin password must satisfy the 12-char requirement in AdminAccountInitializer
@@ -36,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
-          path: target/surefire-reports/
+          path: backend/target/surefire-reports/
 
   # ──────────────────────────────────────────────────────────────────────────
   # Docker Image Build
@@ -73,6 +74,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
