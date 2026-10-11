@@ -39,37 +39,9 @@ The app starts at **http://localhost:8080**
 
 ---
 
-## 🐳 Docker (Recommended for Deployment)
+## 🚀 Deployment
 
-### Run with Docker Compose (app + MongoDB in one command)
-
-```bash
-# Run these commands from the backend folder
-cd backend
-
-# Optional: create backend/.env to override defaults, including the admin password.
-# Keep this file private; do not commit it.
-notepad .env   # or nano .env on Linux
-
-# Start everything
-docker compose up -d
-
-# View logs
-docker compose logs -f app
-```
-
-Access: **http://localhost:8080**
-
-### Run with a pre-built image only (supply your own MongoDB)
-
-```bash
-docker run -d \
-  -p 8080:8080 \
-  -e SPRING_MONGODB_URI="mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/parking_system" \
-  -e PARKEASE_ADMIN_EMAIL="admin@yoursite.com" \
-  -e PARKEASE_ADMIN_PASSWORD="SuperSecure123!" \
-  your-dockerhub-username/parkease:latest
-```
+The frontend can be deployed to Vercel as a static site. Render does not provide a native Java runtime for this Spring Boot backend; deploying it to Render requires Docker. Since this project is kept Docker-free, deploy the backend to a Java-capable hosting provider instead.
 
 ---
 
@@ -86,9 +58,9 @@ docker run -d \
 | `LOG_APP_LEVEL` | `INFO` | App-specific log level |
 | `LOG_ROOT_LEVEL` | `INFO` | Root log level |
 
-> **Security**: Never commit a real `.env` file. Docker Compose supplies defaults when no environment file is present.
+> **Security**: Keep database credentials and admin passwords in your hosting provider's environment-variable settings. Never commit secrets.
 
-For MongoDB Atlas, set `SPRING_MONGODB_URI` in Render to the connection string Atlas provides, for example `mongodb+srv://<user>:<password>@<cluster-host>/parking_system?retryWrites=true&w=majority`. URL-encode special characters in the password. Do not put database credentials in this file.
+For MongoDB Atlas, set `SPRING_MONGODB_URI` in your backend hosting provider to the connection string Atlas provides, for example `mongodb+srv://<user>:<password>@<cluster-host>/parking_system?retryWrites=true&w=majority`. URL-encode special characters in the password. Do not put database credentials in this file.
 
 ---
 
@@ -146,9 +118,7 @@ backend/
 │   └── test/              # Backend tests
 ├── .mvn/                  # Maven wrapper configuration
 ├── mvnw / mvnw.cmd        # Maven wrapper scripts
-├── pom.xml
-├── Dockerfile
-└── docker-compose.yml
+└── pom.xml
 frontend/
 ├── index.html
 ├── app.js
@@ -164,19 +134,17 @@ The repository root contains only these two application folders; `.github/` rema
 
 - Passwords are hashed with **BCrypt**.
 - Session cookies are `HttpOnly` and `SameSite=Lax`.
-- The Docker image runs as a **non-root user** (`parkease`).
 - The admin password env var accepts an empty value — if empty, admin bootstrap is skipped silently.
 - Review and tighten CORS and CSRF settings before going public.
 
 ---
 
-## ☁️ Cloud Deployment (MongoDB Atlas + Any PaaS)
+## ☁️ Cloud Database Setup (MongoDB Atlas)
 
 1. Create a free [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster.
 2. Whitelist your server IP and create a DB user.
 3. Copy the Atlas connection string into `SPRING_MONGODB_URI`.
-4. Deploy the Docker image to **Railway, Render, Fly.io, or any container service**.
-5. Set all required environment variables in the PaaS dashboard.
+4. Set `SPRING_MONGODB_URI` and the admin environment variables in the backend hosting provider.
 
 ---
 
