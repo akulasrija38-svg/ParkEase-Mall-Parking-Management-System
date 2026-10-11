@@ -9,12 +9,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
     private static final Logger logger =
             LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, String>> handleMissingResource(
+            NoResourceFoundException ex) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Resource not found"));
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleBadRequest(
@@ -35,7 +44,7 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of(
                         "error",
-                        "An unexpected server error occurred. Check the VS Code terminal."
+                        "An unexpected server error occurred. Check the backend service logs."
                 ));
     }
 }
