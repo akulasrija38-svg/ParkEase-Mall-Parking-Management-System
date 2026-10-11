@@ -41,7 +41,70 @@ The app starts at **http://localhost:8080**
 
 ## 🚀 Deployment
 
-The frontend can be deployed to Vercel as a static site. Render does not provide a native Java runtime for this Spring Boot backend; deploying it to Render requires Docker. Since this project is kept Docker-free, deploy the backend to a Java-capable hosting provider instead.
+Deploy the backend to Render using its Docker runtime, then deploy the static frontend to Vercel. You do not need Docker installed locally; Render builds the backend image from the repository.
+
+### 1. Set up MongoDB Atlas
+
+1. Create an Atlas cluster and a database user.
+2. In Atlas **Network Access**, allow connections from Render. `0.0.0.0/0` is a broad temporary option; restrict it when practical.
+3. Keep the Atlas connection string for the Render setup below. Include the `parking_system` database name and URL-encode special characters in the password.
+
+### 2. Deploy the backend to Render
+
+1. Push the project to GitHub.
+2. In Render, select **New → Web Service** and connect the repository.
+3. Select the **Docker** runtime and configure:
+
+   | Setting | Value |
+   |---|---|
+   | Branch | Your deployment branch, usually `main` |
+   | Root Directory | Leave blank (repository root) |
+   | Dockerfile Path | `backend/Dockerfile` |
+   | Docker Context Directory | `.` (repository root) |
+   | Docker Command | Leave blank |
+   | Health Check Path | `/api/health` |
+
+   Keep the root directory and build context at the repository root: the Docker build needs both `backend/` and `frontend/`.
+
+4. Add these environment variables in Render:
+
+   | Key | Value |
+   |---|---|
+   | `SPRING_MONGODB_URI` | Atlas URI, e.g. `mongodb+srv://<user>:<password>@<cluster-host>/parking_system?retryWrites=true&w=majority` |
+   | `MONGODB_DATABASE` | `parking_system` |
+   | `PARKEASE_ADMIN_EMAIL` | Your admin email |
+   | `PARKEASE_ADMIN_PASSWORD` | Strong password, at least 12 characters |
+   | `PARKEASE_ADMIN_NAME` | Your admin display name |
+
+5. Create the service and wait for deployment to finish. Test `https://<render-service>.onrender.com/api/health`, then copy the service URL.
+
+### 3. Configure and deploy the frontend to Vercel
+
+1. Create `frontend/vercel.json`, replacing the destination with the Render URL from the previous step:
+
+   ```json
+   {
+     "rewrites": [
+       {
+         "source": "/api/:path*",
+         "destination": "https://YOUR-RENDER-SERVICE.onrender.com/api/:path*"
+       }
+     ]
+   }
+   ```
+
+2. Commit and push the file.
+3. In Vercel, import the same GitHub repository and configure:
+
+   | Setting | Value |
+   |---|---|
+   | Root Directory | `frontend` |
+   | Framework Preset | Other |
+   | Build Command | Leave blank |
+   | Install Command | Leave blank |
+   | Output Directory | `.` |
+
+4. Deploy and test registration, login, mall/slot loading, and bookings. The rewrite sends the frontend's same-origin `/api/...` requests to Render.
 
 ---
 
@@ -60,7 +123,7 @@ The frontend can be deployed to Vercel as a static site. Render does not provide
 
 > **Security**: Keep database credentials and admin passwords in your hosting provider's environment-variable settings. Never commit secrets.
 
-For MongoDB Atlas, set `SPRING_MONGODB_URI` in your backend hosting provider to the connection string Atlas provides, for example `mongodb+srv://<user>:<password>@<cluster-host>/parking_system?retryWrites=true&w=majority`. URL-encode special characters in the password. Do not put database credentials in this file.
+For MongoDB Atlas, set `SPRING_MONGODB_URI` in Render to the connection string Atlas provides. URL-encode special characters in the password. Do not put database credentials in this file.
 
 ---
 
@@ -118,6 +181,7 @@ backend/
 │   └── test/              # Backend tests
 ├── .mvn/                  # Maven wrapper configuration
 ├── mvnw / mvnw.cmd        # Maven wrapper scripts
+├── Dockerfile             # Render backend image build
 └── pom.xml
 frontend/
 ├── index.html
